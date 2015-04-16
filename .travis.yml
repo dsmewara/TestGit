@@ -1,0 +1,28 @@
+# Required to run your project under the correct environment.
+language: php
+
+# Versions of PHP you want your project run with.
+
+php:
+  - 5.4
+
+# Commands to be run before your environment runs.
+before_script:
+# Install Apache
+  - sudo apt-get update -qq
+  - sudo apt-get install -y --force-yes apache2 libapache2-mod-php5 php5-curl php5-mysql php5-intl php5-gd > /dev/null
+  - composer install --prefer-source --no-interaction --dev
+
+  # Selenium server
+  - wget http://selenium-release.storage.googleapis.com/2.44/selenium-server-standalone-2.44.0.jar -O selenium-server-standalone.jar
+  - "java -jar selenium-server-standalone.jar > /dev/null 2>/dev/null &"
+  #- .travis/wait4selenium.sh
+
+
+# Commands you want to run that will verify your build.
+script: 
+
+ - composer self-update
+ - php vendor/bin/codecept build
+ - php vendor/bin/codecept run acceptance SigninCept.php
+
